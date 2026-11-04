@@ -1,0 +1,4 @@
+{"type":"system","subtype":"init","cwd":"/placeholder/workspace/sub","session_id":"session-placeholder","tools":["Read","LS","Execute","Edit","ApplyPatch","Grep","Glob","Create","TodoWrite","AskUser","WebSearch","FetchUrl","Task","Skill","SlackPostMessage"],"model":"model-placeholder","reasoning_effort":"medium"}
+{"type":"message","role":"user","id":"id-placeholder-1","text":"Reply with exactly: OK","timestamp":1793762255609,"session_id":"session-placeholder"}
+{"type":"message","role":"assistant","id":"id-placeholder-2","text":"OK","timestamp":1793762265976,"session_id":"session-placeholder"}
+{"type":"completion","finalText":"OK","numTurns":1,"durationMs":10427,"session_id":"session-placeholder","timestamp":1793762265990,"usage":{"input_tokens":11855,"output_tokens":276,"cache_read_input_tokens":6400,"cache_creation_input_tokens":0,"factory_credits":2108,"thinking_tokens":135,"ttft_ms":4358}}

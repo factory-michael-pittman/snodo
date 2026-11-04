@@ -1,0 +1,12 @@
+Invalid model: not-a-real-model
+
+Available built-in models:
+  auto, model-placeholder
+
+No custom models configured. Add them to ~/.factory/settings.json
+Invalid model: not-a-real-model
+
+Available built-in models:
+  auto, model-placeholder
+
+No custom models configured. Add them to ~/.factory/settings.json

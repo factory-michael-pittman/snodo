@@ -32,6 +32,7 @@ from snodo.coders.opencode_cli_adapter import OpenCodeCLIAdapter
 from snodo.coders.agy_adapter import AGYAdapter
 from snodo.coders.codex_cli_adapter import CodexCLIAdapter
 from snodo.coders.claude_cli_adapter import ClaudeCLIAdapter
+from snodo.coders.droid_cli_adapter import DroidCLIAdapter
 from snodo.infrastructure.config import DEFAULT_MODEL
 
 _logger = logging.getLogger(__name__)
@@ -52,6 +53,7 @@ CODER_REGISTRY: Dict[str, Type[CoderAdapter]] = {
     "agy": AGYAdapter,
     "codex-cli": CodexCLIAdapter,
     "claude-cli": ClaudeCLIAdapter,
+    "droid-cli": DroidCLIAdapter,
 }
 
 _BUILTIN_CODER_NAMES = frozenset(CODER_REGISTRY)
@@ -114,7 +116,7 @@ def resolve_coder_name(
     1. Explicit mock flag (use_mock / --mock)
     2. Explicit CLI choice (cli_coder / --coder)
     3. Protocol mode choice (mode_coder / mode.coder)
-    4. Model string prefix mapping (claude-cli/, codex-cli/, opencode-cli/, opencode/, agy/, gpt/o1/o3, claude, gemini)
+    4. Model string prefix mapping (droid-cli/, claude-cli/, codex-cli/, opencode-cli/, opencode/, agy/, gpt/o1/o3, claude, gemini)
     5. Default fallback ('litellm')
     """
     if use_mock:
@@ -124,6 +126,8 @@ def resolve_coder_name(
     if mode_coder:
         return mode_coder
     if model:
+        if model.startswith("droid-cli/"):
+            return "droid-cli"
         if model.startswith("claude-cli/"):
             return "claude-cli"
         if model.startswith("codex-cli/"):

@@ -1,0 +1,7 @@
+# Recorded from local Droid 0.233.0: droid exec --help (launch flag lines only).
+  -o, --output-format <format>  Output format (default: "text")
+  --auto <level>              Autonomy level: low|medium|high
+  --disable-builtin-skills    Disable Factory-provided builtin skills (not supported in ACP modes)
+  -m, --model <id>            Model ID to use (default: model-placeholder)
+  --only-tools <ids>          Use only tool IDs or MCP:<server>[/<tool>] selectors
+  --cwd <path>                Working directory path

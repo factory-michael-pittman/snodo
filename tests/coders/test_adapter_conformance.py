@@ -154,6 +154,7 @@ _DRIVERS = {
     "agy": _drive_subprocess_cli_adapter,
     "codex-cli": _drive_subprocess_cli_adapter,
     "claude-cli": _drive_subprocess_cli_adapter,
+    "droid-cli": _drive_subprocess_cli_adapter,
 }
 
 

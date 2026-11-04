@@ -1,0 +1,4 @@
+{"type":"system","subtype":"init","cwd":"/placeholder/workspace/sub","session_id":"session-placeholder","tools":["Read","LS","Execute","Edit","ApplyPatch","Grep","Glob","Create","TodoWrite","AskUser","WebSearch","FetchUrl","Task","Skill","SlackPostMessage"],"model":"model-placeholder","reasoning_effort":"medium"}
+{"type":"message","role":"user","id":"id-placeholder-1","text":"hi","timestamp":1793762631080,"session_id":"session-placeholder"}
+{"type":"error","source":"agent_loop","message":"401 {\"detail\":\"Api key not found or deleted\",\"status\":401,\"title\":\"Unauthorized\",\"requestId\":\"request-placeholder\"}","timestamp":1793762631338,"session_id":"session-placeholder"}
+{"type":"error","source":"cli","message":"Error: Authentication failed. FACTORY_API_KEY is set but appears to be invalid. Unset it or replace it with a valid key.","timestamp":1793762631345,"session_id":"session-placeholder"}
