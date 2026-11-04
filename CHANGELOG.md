@@ -9,6 +9,8 @@ snodo uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- Add an experimental `droid-cli` coder that runs Factory's `droid exec` in the task worktree with `stream-json` output, medium autonomy, a fixed tool allowlist and built-in skills disabled. (Refs #1085)
+
 ## [0.28.2] — 2026-11-03
 
 - Return the reason for a refused MCP tool call to the caller, so a rejected `generate_spec` names what to correct instead of the bare "Error executing tool generate_spec" that the `mcp` 2.x move left. (Fixes #1073)

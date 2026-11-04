@@ -42,8 +42,8 @@ merge-request changes in GitHub Actions or GitLab CI.
 ## Coder backends
 
 The coder writes; snodo governs, gates and records. `litellm` (default),
-`opencode-cli`, `codex-cli`, `agy` and `mock` are supported; the container `opencode` path is
-experimental. Which coder you pick does not change what is enforced.
+`opencode-cli`, `codex-cli`, `agy` and `mock` are supported; the container `opencode` path and
+`droid-cli` are experimental. Which coder you pick does not change what is enforced.
 
 [Coder backends →](coders.md)
 

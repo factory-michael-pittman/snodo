@@ -24,6 +24,7 @@ the write crosses and who makes the commit — everything after is identical.*
 | `opencode-cli` | Host `opencode run` CLI invocation | In-Place Host CLI | `opencode` CLI on PATH | `opencode auth login` or host provider env vars (`OPENROUTER_API_KEY`, etc.) — the coder authenticates against your own subscription |
 | `codex-cli` | OpenAI Codex CLI (`codex exec`) | In-Place Host CLI | `codex` CLI on PATH | `codex login` — uses your Codex subscription |
 | `claude-cli` | Claude Code CLI (`claude -p`) | In-Place Host CLI | `claude` CLI on PATH | `claude auth login` — uses the CLI's own login |
+| `droid-cli` *(experimental)* | Factory Droid CLI (`droid exec`) | In-Place Host CLI | `droid` CLI on PATH | Sign in by running `droid`, or set `FACTORY_API_KEY` — uses the CLI's own login |
 | `agy` | Antigravity CLI (`agy -p`) host invocation | In-Place Host CLI | `agy` CLI on PATH | `agy login` / Google Cloud host credentials — the coder authenticates against your own subscription |
 | `mock` | Deterministic stub for dry-runs and testing | Stub | None | None |
 
@@ -39,7 +40,8 @@ Provider API keys are a requirement of the **validators**, which always run
 through LiteLLM — not of the coder. The coder need not use one: `opencode-cli`,
 `codex-cli`, and `agy` authenticate against the operator's own subscription, so no provider
 key is spent on writing the code. `claude-cli` likewise uses Claude Code's own
-login rather than Snodo's Anthropic API key. `--mock` needs nothing at all.
+login rather than Snodo's Anthropic API key, and `droid-cli` uses Droid's stored
+sign-in or `FACTORY_API_KEY`. `--mock` needs nothing at all.
 
 Beyond the built-in catalog (Anthropic, OpenAI, Google, OpenRouter, DeepSeek and
 Cloudflare Workers AI), any OpenAI-compatible endpoint works by declaring a
@@ -58,6 +60,7 @@ not asked for one.
   snodo run "implement feature" --coder opencode-cli --model opencode-cli/claude-3-7-sonnet
   snodo run "implement feature" --coder codex-cli --model codex-cli/gpt-5-codex
   snodo run "implement feature" --coder claude-cli --model claude-cli/sonnet
+  snodo run "implement feature" --coder droid-cli --model droid-cli/claude-sonnet-4-5-20250929
   ```
 
 ## Coder Selection Precedence
@@ -67,14 +70,14 @@ not asked for one.
 1. **Explicit Mock Flag**: `--mock` / `use_mock_coder=True` (always returns `'mock'`).
 2. **Explicit CLI Flag**: `--coder <name>` (e.g., `snodo run "task" --coder agy`).
 3. **Initial protocol mode**: `coder: <name>` from the mode named by `initial_mode` in `.snodo/protocol.yml`.
-4. **Model Prefix Mapping**: Inferred from model prefix: `claude-cli/` → `claude-cli`, `codex-cli/` → `codex-cli`, `opencode-cli/` → `opencode-cli`, `opencode/` → `opencode`, `agy/` → `agy`, `gpt`/`o1`/`o3` → `openai`, `claude` → `anthropic`, `gemini`/`google/` → `gemini`.
+4. **Model Prefix Mapping**: Inferred from model prefix: `droid-cli/` → `droid-cli`, `claude-cli/` → `claude-cli`, `codex-cli/` → `codex-cli`, `opencode-cli/` → `opencode-cli`, `opencode/` → `opencode`, `agy/` → `agy`, `gpt`/`o1`/`o3` → `openai`, `claude` → `anthropic`, `gemini`/`google/` → `gemini`.
 5. **Default Fallback**: `litellm`.
 
 For a normal `snodo run`, graph construction resolves the mode-level coder from
 the protocol's `initial_mode`, even if execution has entered or resumed another
 current mode. An explicit `--coder` overrides that mode setting; `--mock` has
 highest priority. Prefix routing applies only when neither is set:
-`claude-cli/`, `codex-cli/`, `opencode-cli/`, `opencode/`, and `agy/` select their named
+`droid-cli/`, `claude-cli/`, `codex-cli/`, `opencode-cli/`, `opencode/`, and `agy/` select their named
 backends; `gpt`, `o1`, or `o3` select `openai`; `claude` selects `anthropic`;
 and `gemini` or `google/` select `gemini`. Otherwise the coder is `litellm`.
 
@@ -99,7 +102,7 @@ settings honoured by each backend are:
 |---|---|
 | `litellm`, `openai`, `anthropic`, `gemini` | `model`, `temperature`, `max_tokens`, `max_tool_turns` |
 | `opencode` | `model`, `workspace`, `container`, `sandboxed` |
-| `opencode-cli`, `codex-cli`, `claude-cli`, `agy` | `model`, `timeout_seconds`, `workspace` |
+| `opencode-cli`, `codex-cli`, `claude-cli`, `droid-cli`, `agy` | `model`, `timeout_seconds`, `workspace` |
 | `mock` | `mock_files` |
 
 The provider-specific adapters inherit the LiteLLM settings. The in-place host
@@ -108,7 +111,7 @@ a mode's `coder_config` are also checked and reported by their config key.
 
 ## In-Place Coders vs `litellm`
 
-External coders (`opencode`, `opencode-cli`, `codex-cli`, `claude-cli`, `agy`) inherit `InPlaceCoderAdapter` (`skip_engine_commit = True`, `skip_workspace_write = True`):
+External coders (`opencode`, `opencode-cli`, `codex-cli`, `claude-cli`, `droid-cli`, `agy`) inherit `InPlaceCoderAdapter` (`skip_engine_commit = True`, `skip_workspace_write = True`):
 
 - **In-Place File Writes**: External coders edit files directly in the workspace working tree.
 - **Commit Ownership**: The adapter stages and commits changes to git upon completion (`InPlaceCoderAdapter._commit_changes()`), advancing `HEAD` so post-execute validators reviewing `git diff HEAD~1..HEAD` see the exact change produced.
@@ -125,6 +128,27 @@ cost, and served model are captured when Claude Code supplies them. Authenticati
 is managed by the installed CLI and no credential is passed by Snodo. This is
 an in-place host process, not an OS/container sandbox: it runs within the task
 worktree and shares the host account's access.
+
+`droid-cli` is experimental (ADR 062). It runs Factory's `droid exec
+--output-format stream-json` at `--auto medium`, which allows edits, builds and
+tests but stops at `git push` and remote writes; Snodo never passes `--auto
+high` or `--skip-permissions-unsafe`. A fixed `--only-tools` allowlist
+(`DroidCLIAdapter.tool_allowlist`) keeps read, search, edit, shell and to-do
+tools and removes the account and organisation tools whose effects Snodo cannot
+see, such as automations, missions, subagents, connector posting and web
+search. It is not an egress control: shell commands run through `Execute` can
+still reach the network. `--disable-builtin-skills` turns off Factory's
+built-in skills. Permission stops
+and authentication failures arrive as `error` events on stdout and are kept in
+the halt output. Its `droid-cli/<model>` namespace is stripped before `--model`;
+unprefixed judging models are not passed to Droid. Reported input, output, cache
+and reasoning tokens and the served model are captured; cost is not recorded,
+because Droid reports Factory credits rather than money. Unlike `claude-cli`,
+there is no flag to skip project-level Droid settings, so a repository's
+`.factory/` configuration, including hooks, applies to the run. Authentication
+is managed by the installed CLI (its stored sign-in, or `FACTORY_API_KEY`, which
+takes precedence when set) and no credential is passed by Snodo. Like the other
+host CLI coders, it is not an OS or container sandbox.
 
 ## Adding a New Coder Adapter
 

@@ -146,10 +146,11 @@ Measured size, complexity and the CI gates are on the [docs home](docs/index.md)
 
 Three honest boundaries, so you meet them here rather than an hour in:
 
-- **The `opencode` coder paths are experimental.** `litellm` (the default),
-  `openai`, `anthropic`, `gemini`, `opencode-cli`, `codex-cli`, `claude-cli`,
-  `agy` and `mock` are supported. The built-in `litellm` coder exists so snodo
-  works with nothing else installed; if an expert CLI is available, prefer it.
+- **The `opencode` and `droid-cli` coder paths are experimental.** `litellm`
+  (the default), `openai`, `anthropic`, `gemini`, `opencode-cli`, `codex-cli`,
+  `claude-cli`, `agy` and `mock` are supported. The built-in `litellm` coder
+  exists so snodo works with nothing else installed; if an expert CLI is
+  available, prefer it.
 - **The repository is trusted, not sandboxed.** snodo runs your test and build
   commands, and a protocol file is executable input, like a `Makefile` or a CI
   config. [ADR 014](docs/decisions/014-trusted-repository-threat-model.md) is the

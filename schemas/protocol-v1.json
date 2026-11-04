@@ -175,6 +175,7 @@
                   "anthropic",
                   "claude-cli",
                   "codex-cli",
+                  "droid-cli",
                   "gemini",
                   "litellm",
                   "mock",

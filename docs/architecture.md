@@ -252,6 +252,7 @@ Shipped adapters in `snodo.coders`:
 - **LiteLLMAdapter** (`litellm.py`): Direct completions via LiteLLM (~100+ providers).
 - **AGYAdapter** (`agy_adapter.py`): Shells out to Antigravity CLI (`agy -p`) on host.
 - **CodexCLIAdapter** (`codex_cli_adapter.py`): Runs Codex CLI `exec` with JSONL events and workspace-write sandboxing.
+- **DroidCLIAdapter** (`droid_cli_adapter.py`, experimental): Runs Factory's `droid exec` with `stream-json` events, medium autonomy and a fixed tool allowlist.
 - **OpenCodeCLIAdapter** (`opencode_cli_adapter.py`): Shells out to host `opencode run`.
 - **OpenCodeAdapter** (`opencode_adapter.py`): HTTP client to containerised OpenCode server in Docker (`POST /session`).
 - **MockAdapter** (`mock.py`): Deterministic stubs for dry-runs and testing.
